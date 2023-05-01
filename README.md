@@ -10,3 +10,8 @@ Alex Navarro
 
 ## Project Objective:
 Demonstrate how to clean and prep data using Microsoft Azure Synapse Analytics. Then visualize the output using Microsoft Power BI.
+
+## Import Data into Azure Data Lake:
+We will use "Azure Data Explorer" to import our data:
+
+![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/Azure%20Storage%20Explorer.png?raw=true)
