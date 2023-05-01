@@ -23,4 +23,5 @@ Step 1: Create Blob Container:
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/Create%20Blob%20Container.png?raw=true)
 * I called my new Blob Container "nyc-tax-data":
 * Click on "Upload" then select the file path for the data you want to upload:
+* You will see the upload progress at the bottom of the screen
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/Upload%20Files%20to%20Blob%20Container.png?raw=true)
