@@ -52,4 +52,4 @@ FROM
     ) AS [result]
 ```
 * Lastly, I'm going to create a folder and sub-folder to store my query in:
-![ScreenShot]()
+![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%203.png?raw=true)
