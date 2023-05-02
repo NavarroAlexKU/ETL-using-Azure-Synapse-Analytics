@@ -53,3 +53,26 @@ FROM
 ```
 * Lastly, I'm going to create a folder and sub-folder to store my query in and then publish the changes:
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%203.png?raw=true)
+
+### Check the data types of the dataset:
+```
+-- execute stored procedure to check data type:
+-- This is auto-generated code
+SELECT
+    -- select top 100 rows:
+    TOP 100 *
+-- execute from clause:
+FROM
+    OPENROWSET(
+        -- set BULK to file path:
+        BULK 'https://synpasecoursejayhawkdl.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv',
+        -- set format of file:
+        FORMAT = ''CSV'',
+        -- set parser_version to 2.0 for performance:
+        PARSER_VERSION = ''2.0'',
+        -- set header_row function to true:
+        HEADER_ROW = TRUE,
+        FIELDTERMINATOR = ',',
+        ROWTERMINATOR = '\n
+    -- alias as result:
+    ) AS [result]
