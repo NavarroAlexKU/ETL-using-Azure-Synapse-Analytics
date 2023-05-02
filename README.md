@@ -55,8 +55,10 @@ FROM
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%203.png?raw=true)
 
 ### Check the data types of the dataset:
+We can use the built in stored-procedure called "sp_describe_first_result_set" to see the data types of the data:
 ```
--- execute stored procedure to check data type:
+ -- examine the data types for the columns:
+ EXEC sp_describe_first_result_set N'
 -- This is auto-generated code
 SELECT
     -- select top 100 rows:
@@ -65,14 +67,13 @@ SELECT
 FROM
     OPENROWSET(
         -- set BULK to file path:
-        BULK 'https://synpasecoursejayhawkdl.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv',
+        BULK ''https://synpasecoursejayhawkdl.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv'',
         -- set format of file:
         FORMAT = ''CSV'',
         -- set parser_version to 2.0 for performance:
         PARSER_VERSION = ''2.0'',
         -- set header_row function to true:
-        HEADER_ROW = TRUE,
-        FIELDTERMINATOR = ',',
-        ROWTERMINATOR = '\n
+        HEADER_ROW = TRUE
     -- alias as result:
-    ) AS [result]
+    ) AS [result]'
+```
