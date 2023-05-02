@@ -77,3 +77,4 @@ FROM
     -- alias as result:
     ) AS [result]'
 ```
+![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%204.png?raw=true)
