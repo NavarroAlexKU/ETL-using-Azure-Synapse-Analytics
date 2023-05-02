@@ -31,3 +31,22 @@ Next, will open up Azure Synapse Analytics and perform some queries for our EDA 
 * Go to Data, Linked Tab
 * Create a new SQL script for the "taxi_zone.csv" file:
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%201.png?raw=true)
+* Execute the following query using the "Top 100 Rows" feature to display the first 100 rows of data:
+```
+-- This is auto-generated code
+SELECT
+    -- select top 100 rows:
+    TOP 100 *
+-- execute from clause:
+FROM
+    OPENROWSET(
+        -- set BULK to file path:
+        BULK 'https://synpasecoursejayhawkdl.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv',
+        -- set format of file:
+        FORMAT = 'CSV',
+        -- set parser_version to 2.0 for performance:
+        PARSER_VERSION = '2.0'
+    -- alias as result:
+    ) AS [result]
+
+```
