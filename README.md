@@ -52,4 +52,4 @@ FROM
     ) AS [result]
 ```
 * Lastly, I'm going to create a folder and sub-folder to store my query in:
-
+![ScreenShot]()
