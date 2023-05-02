@@ -45,8 +45,9 @@ FROM
         -- set format of file:
         FORMAT = 'CSV',
         -- set parser_version to 2.0 for performance:
-        PARSER_VERSION = '2.0'
+        PARSER_VERSION = '2.0',
+        -- set header_row function to true:
+        HEADER_ROW = TRUE
     -- alias as result:
     ) AS [result]
-
 ```
