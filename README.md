@@ -167,8 +167,8 @@ We want to create an external data source for this allows us to switch between d
 -- create external data source:
 CREATE EXTERNAL DATA SOURCE nyc_taxi_data
 WITH (
-    LOCATION = 'https://synpasecoursejayhawkdl.dfs.core.windows.net/' -- point to container level:
-)
+    LOCATION = 'abfss://nyc-taxi-data@synpasecoursejayhawkdl.dfs.core.windows.net/' -- point to container level:
+);
 ```
 
 You can confirm that the External Data Source was created by checking in the Data tab:
