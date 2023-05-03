@@ -171,5 +171,9 @@ WITH (
 )
 ```
 
+You can confirm that the External Data Source was created by checking in the Data tab:
+
+![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/Create%20External%20Database.png?raw=true)
+
 ## Data Transformation:
 ![ScreenShot](https://global-uploads.webflow.com/634fa785d369cb60d80b6dd1/637f242f02ba099898c68400_Data-Transform.jpg)
