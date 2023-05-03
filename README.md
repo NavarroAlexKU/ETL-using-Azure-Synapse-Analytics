@@ -78,3 +78,30 @@ FROM
     ) AS [result]'
 ```
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%204.png?raw=true)
+
+However, in terms of creating cost efficient queries in Azure Synapse Analytics: lets check what the max length is for our columns to confirm if we need Azure Synapse Analytics reading our columns with the given data types:
+```
+- check max length for columns:
+SELECT
+    MAX(LEN(LocationId)) AS len_LocationId,
+    MAX(LEN(Borough)) AS len_Borough,
+    MAX(LEN(Zone)) AS len_zone,
+    MAX(LEN(service_zone)) as len_service_zone
+-- insert from clause:
+FROM
+    OPENROWSET(
+        -- set BULK to file path:
+        BULK 'https://synpasecoursejayhawkdl.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv',
+        -- set format of file:
+        FORMAT = 'CSV',
+        -- set parser_version to 2.0 for performance:
+        PARSER_VERSION = '2.0',
+        -- set header_row function to true:
+        HEADER_ROW = TRUE,
+        -- set fieldterminator:
+        FIELDTERMINATOR = ',',
+        -- set rowterminator:
+        ROWTERMINATOR = '\n'
+    -- alias as result:
+    ) AS [result]
+```
