@@ -145,5 +145,21 @@ FROM
 
 We can see that Azure Synapse Analytics is now reading in the correct data types when we explicity state our data types for the above columns
 
+## Specify Data Collation:
+I need to create a database that will read data in as UTF8 for all columns if applicable: Otherwise the data could come in wrong:
+```
+-- create database:
+CREATE DATABASE nyc_taxi_discovery;
+
+-- switch to database:
+USE nyc_taxi_discovery;
+
+-- switch to database:
+USE nyc_taxi_discovery;
+
+-- alter database:
+ALTER DATABASE nyc_taxi_discovery COLLATE Latin1_General_100_CI_AI_SC_UTF8;
+```
+
 ## Data Transformation:
 ![ScreenShot](https://global-uploads.webflow.com/634fa785d369cb60d80b6dd1/637f242f02ba099898c68400_Data-Transform.jpg)
