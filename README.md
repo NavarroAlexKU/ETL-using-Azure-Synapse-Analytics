@@ -164,10 +164,10 @@ ALTER DATABASE nyc_taxi_discovery COLLATE Latin1_General_100_CI_AI_SC_UTF8;
 ## Create External Data Source:
 We want to create an external data source for this allows us to switch between different enviornments without having to change out our connection string each time:
 ```
--- create external data source:
-CREATE EXTERNAL DATA SOURCE nyc_taxi_data
+-- create external data source: raw
+CREATE EXTERNAL DATA SOURCE nyc_taxi_data_raw
 WITH (
-    LOCATION = 'abfss://nyc-taxi-data@synpasecoursejayhawkdl.dfs.core.windows.net/' -- point to container level:
+    LOCATION = 'abfss://nyc-taxi-data@synpasecoursejayhawkdl.dfs.core.windows.net/raw' -- point to container level:
 );
 ```
 
