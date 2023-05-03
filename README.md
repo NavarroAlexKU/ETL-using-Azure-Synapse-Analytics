@@ -144,3 +144,5 @@ FROM
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%206.png?raw=true)
 
 We can see that Azure Synapse Analytics is now reading in the correct data types when we explicity state our data types for the above columns
+
+## Data Transformation:
