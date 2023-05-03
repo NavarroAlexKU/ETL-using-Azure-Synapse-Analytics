@@ -106,3 +106,36 @@ FROM
     ) AS [result]
 ```
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%205.png?raw=true)
+* As we can see, the length of the data types is actually a lot smaller then the default data types Synapse gave us.
+* Good practice is to check the data type length before having Azure Synapse Analytics give the default data types.
+  - Serverless SQL pool charges based on the amount of data processed. We don't want Synapse giving us larger data types then needed since we would be charged more then what we should be.
+  - The data types also affect the query performance, we want to make sure that they're efficient data types to optimize query performance.
+* Lets run the query again but this time given the explicit data types to run:
+```
+-- examine the data types for the columns:
+EXEC sp_describe_first_result_set N'
+SELECT *
+-- insert from clause:
+FROM
+    OPENROWSET(
+        -- set BULK to file path:
+        BULK ''https://synpasecoursejayhawkdl.dfs.core.windows.net/nyc-taxi-data/raw/taxi_zone.csv'',
+        -- set format of file:
+        FORMAT = ''CSV'',
+        -- set parser_version to 2.0 for performance:
+        PARSER_VERSION = ''2.0'',
+        -- set header_row function to true:
+        HEADER_ROW = TRUE,
+        -- set fieldterminator:
+        FIELDTERMINATOR = '','',
+        -- set rowterminator:
+        ROWTERMINATOR = ''\n''
+    )
+    -- execute with clause:
+    WITH (
+        LocationID SMALLINT,
+        Borough VARCHAR(15),
+        Zone VARCHAR(50),
+        service_zone VARCHAR(15)
+    ) AS [result]' -- alias as result:
+```
