@@ -139,3 +139,4 @@ FROM
         service_zone VARCHAR(15)
     ) AS [result]' -- alias as result:
 ```
+![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%206.png?raw=true)
