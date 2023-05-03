@@ -27,6 +27,8 @@ Step 1: Create Blob Container:
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/Upload%20Files%20to%20Blob%20Container.png?raw=true)
 
 ## Exploratory Data Analysis (EDA):
+
+
 Next, will open up Azure Synapse Analytics and perform some queries for our EDA process:
 * Go to Data, Linked Tab
 * Create a new SQL script for the "taxi_zone.csv" file:
