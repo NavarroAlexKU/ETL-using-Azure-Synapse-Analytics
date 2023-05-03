@@ -146,3 +146,4 @@ FROM
 We can see that Azure Synapse Analytics is now reading in the correct data types when we explicity state our data types for the above columns
 
 ## Data Transformation:
+![ScreenShot](https://global-uploads.webflow.com/634fa785d369cb60d80b6dd1/637f242f02ba099898c68400_Data-Transform.jpg)
