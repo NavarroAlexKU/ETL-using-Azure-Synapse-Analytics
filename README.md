@@ -262,6 +262,12 @@ You can use the OPENROWSET function with a BULK path to query file data from you
 -- switch databases:
 USE nyc_taxi_ldw;
 
+-- check if data source already exists:
+IF NOT EXISTS (
+    SELECT *
+    FROM sys.external_data_sources
+    WHERE name = 'nyc_taxi_src'
+)
 -- create external data source:
 CREATE EXTERNAL DATA SOURCE nyc_taxi_src
 WITH (
@@ -295,20 +301,23 @@ WITH (
 When you need to perform a lot of analysis or reporting from files in the data lake, using the OPENROWSET function can result in complex code that includes data sources and file paths. To simplify access to the data, you can encapsulate the files in an external table; which users and reporting applications can query using a standard SQL SELECT statement just like any other database table. To create an external table, use the CREATE EXTERNAL TABLE statement, specifying the column schema as for a standard table, and including a WITH clause specifying the external data source, relative path, and external file format for your data.
 
 ```
---- set database:
 USE nyc_taxi_ldw;
-
--- Create a new external table
-CREATE EXTERNAL TABLE bronze.taxi_zone (
-    location_id SMALLINT,
-    borough VARCHAR(15),
-    zone VARCHAR(50),
-    service_zone VARCHAR(15))
-WITH (
-    LOCATION = 'raw/taxi_zone.csv',
-    DATA_SOURCE = nyc_taxi_src,
-    FILE_FORMAT = csv_file_format
-);
+-- check if table exist:
+IF OBJECT_ID('bronze.taxi_zone') IS NOT NULL 
+DROP 
+  EXTERNAL TABLE bronze.taxi_zone -- create taxi_zone table:
+  CREATE EXTERNAL TABLE bronze.taxi_zone (
+    -- insert columns and data types:
+    location_id SMALLINT, 
+    borough VARCHAR(15), 
+    zone VARCHAR(50), 
+    service_zone VARCHAR(15)
+  ) -- execute with clause:
+  WITH (
+    LOCATION = 'raw/taxi_zone.csv', DATA_SOURCE = nyc_taxi_src, 
+    FILE_FORMAT = csv_file_format_pv1, 
+    REJECT_VALUE = 10, REJECTED_ROW_LOCATION = 'rejections/taxi_zone'
+  );
 ```
 
 
