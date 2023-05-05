@@ -217,8 +217,79 @@ ORDER BY number_of_trips ASC;
 
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%209.png?raw=true)
 
-## Create External Table:
+## Create External Database Objects:
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/External%20Table%201.png?raw=true)
+
+You can use the OPENROWSET function in SQL queries that run in the default master database of the built-in serverless SQL pool to explore data in the data lake. However, sometimes you may want to create a custom database that contains some objects that make it easier to work with external data in the data lake that you need to query frequently.
+
+### Create the Database:
+
+```
+-- use master database:
+USE master
+GO
+
+-- create database:
+CREATE DATABASE nyc_taxi_ldw
+GO
+
+-- alter database:
+ALTER DATABASE nyc_taxi_ldw COLLATE Latin1_General_100_BIN2_UTF8
+GO
+
+-- use nyc_taxi_ldw:
+USE nyc_taxi_ldw
+GO
+
+-- create bronze schema:
+CREATE SCHEMA bronze
+GO
+
+-- create silver schema:
+CREATE SCHEMA silver
+GO
+
+-- create gold schema:
+CREATE SCHEMA gold
+GO
+```
+
+### Create the External Data Source:
+
+You can use the OPENROWSET function with a BULK path to query file data from your own database, just as you can in the master database; but if you plan to query data in the same location frequently, it's more efficient to define an external data source that references that location.
+
+```
+-- switch databases:
+USE nyc_taxi_ldw;
+
+-- create external data source:
+CREATE EXTERNAL DATA SOURCE nyc_taxi_src
+WITH (
+    LOCATION = 'https://synpasecoursejayhawkdl.dfs.core.windows.net/nyc-taxi-data'
+);
+```
+
+### Create an external file format:
+
+While an external data source simplifies the code needed to access files with the OPENROWSET function, you still need to provide format details for the file being access; which may include multiple settings for delimited text files
+
+```
+USE nyc_taxi_ldw;
+
+-- Create an external file format for DELIMITED (CSV/TSV) files.
+CREATE EXTERNAL FILE FORMAT csv_file_format
+WITH (
+    FORMAT_TYPE = DELIMITEDTEXT,
+    FORMAT_OPTIONS (
+        FIELD_TERMINATOR = ',',
+        STRING_DELIMITER = '"',
+        FIRST_ROW = 2,
+        USE_TYPE_DEFAULT = FALSE,
+        ENCODING = 'UTF8',
+        PARSER_VERSION = '2.0')
+    );
+```
+
 
 
 ## Data Transformation:
