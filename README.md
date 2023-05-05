@@ -217,6 +217,9 @@ ORDER BY number_of_trips ASC;
 
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%209.png?raw=true)
 
+## Create External Table:
+
+
 
 ## Data Transformation:
 ![ScreenShot](https://global-uploads.webflow.com/634fa785d369cb60d80b6dd1/637f242f02ba099898c68400_Data-Transform.jpg)
