@@ -175,7 +175,45 @@ You can confirm that the External Data Source was created by checking in the Dat
 
 ![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/Create%20External%20Database.png?raw=true)
 
-## Query 
+## Plot and Join data:
+Next, maybe we want to plot the data in a aggregated view:
+* first I'll join the taxi_zone and borough data:
+```
+------ join data ---------
+SELECT
+    taxi_zone.borough,
+    COUNT(1) AS number_of_trips
+FROM
+    OPENROWSET(
+        BULK 'trip_data_green_parquet/year=2020/month=01/',
+        FORMAT = 'PARQUET',
+        DATA_SOURCE = 'nyc_taxi_data_raw'
+    ) AS trip_data
+JOIN
+    OPENROWSET(
+        -- set BULK to file path:
+        BULK 'abfss://nyc-taxi-data@synpasecoursejayhawkdl.dfs.core.windows.net/raw/taxi_zone.csv',
+        -- set format of file:
+        FORMAT = 'CSV',
+        -- set parser_version to 2.0 for performance:
+        PARSER_VERSION = '2.0',
+        --set FIRSTROW parameter:
+        FIRSTROW = 2
+    )
+    WITH (
+        location_id SMALLINT 1,
+        borough VARCHAR(15) 2,
+        zone VARCHAR(50) 3,
+        service_zone VARCHAR(15) 4
+    ) AS taxi_zone
+ON trip_data.PULocationID = taxi_zone.location_id
+GROUP BY taxi_zone.borough
+-- order by:
+ORDER BY taxi_zone.borough;
+```
+* Then we can use the "Chart" tab to visual the data:
+
+
 
 ## Data Transformation:
 ![ScreenShot](https://global-uploads.webflow.com/634fa785d369cb60d80b6dd1/637f242f02ba099898c68400_Data-Transform.jpg)
