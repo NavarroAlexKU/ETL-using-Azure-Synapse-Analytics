@@ -213,6 +213,9 @@ ORDER BY number_of_trips ASC;
 ```
 * Then we can use the "Chart" tab to visual the data:
 
+![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%208.png?raw=true)
+
+![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/EDA%209.png?raw=true)
 
 
 ## Data Transformation:
