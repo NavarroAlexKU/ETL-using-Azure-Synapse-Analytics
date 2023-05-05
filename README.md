@@ -209,7 +209,7 @@ JOIN
 ON trip_data.PULocationID = taxi_zone.location_id
 GROUP BY taxi_zone.borough
 -- order by:
-ORDER BY taxi_zone.borough;
+ORDER BY number_of_trips ASC;
 ```
 * Then we can use the "Chart" tab to visual the data:
 
