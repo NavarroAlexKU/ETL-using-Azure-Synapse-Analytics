@@ -349,6 +349,41 @@ When you need to perform a lot of analysis or reporting from files in the data l
 ```
 USE nyc_taxi_ldw;
 -- check if table exist:
+IF NOT EXISTS (
+  SELECT 
+    * 
+  FROM 
+    sys.external_file_formats 
+  WHERE 
+    name = 'csv_file_format'
+) -- Create an external file format for DELIMITED (CSV/TSV) files.
+CREATE EXTERNAL FILE FORMAT csv_file_format WITH (
+  FORMAT_TYPE = DELIMITEDTEXT, 
+  FORMAT_OPTIONS (
+    FIELD_TERMINATOR = ',', STRING_DELIMITER = '"', 
+    FIRST_ROW = 2, USE_TYPE_DEFAULT = FALSE, 
+    ENCODING = 'UTF8', PARSER_VERSION = '2.0'
+  )
+);
+-- check if table exist:
+IF NOT EXISTS (
+  SELECT 
+    * 
+  FROM 
+    sys.external_file_formats 
+  WHERE 
+    name = 'csv_file_format_pv1'
+) -- Create an external file format for DELIMITED (CSV/TSV) files.
+CREATE EXTERNAL FILE FORMAT csv_file_format_pv1 WITH (
+  FORMAT_TYPE = DELIMITEDTEXT, 
+  FORMAT_OPTIONS (
+    FIELD_TERMINATOR = ',', STRING_DELIMITER = '"', 
+    FIRST_ROW = 2, USE_TYPE_DEFAULT = FALSE, 
+    ENCODING = 'UTF8', PARSER_VERSION = '1.0'
+  )
+);
+USE nyc_taxi_ldw;
+-- check if table exist:
 IF OBJECT_ID('bronze.taxi_zone') IS NOT NULL 
 DROP 
   EXTERNAL TABLE bronze.taxi_zone -- create taxi_zone table:
@@ -364,6 +399,130 @@ DROP
     FILE_FORMAT = csv_file_format_pv1, 
     REJECT_VALUE = 10, REJECTED_ROW_LOCATION = 'rejections/taxi_zone'
   );
+SELECT 
+  * 
+FROM 
+  bronze.taxi_zone;
+--- create calendar table:
+IF OBJECT_ID('bronze.calendar') IS NOT NULL 
+DROP 
+  EXTERNAL TABLE bronze.calendar;
+-- create EXTERNAL TABLE:
+CREATE EXTERNAL TABLE bronze.calendar (
+  date_key INT, 
+  date DATE, 
+  year SMALLINT, 
+  month TINYINT, 
+  day TINYINT, 
+  day_name VARCHAR(10), 
+  day_of_year SMALLINT, 
+  week_of_month TINYINT, 
+  week_of_year TINYINT, 
+  month_name VARCHAR(10), 
+  year_month INT, 
+  year_week INT
+) WITH (
+  LOCATION = 'raw/calendar.csv', DATA_SOURCE = nyc_taxi_src, 
+  FILE_FORMAT = csv_file_format_pv1, 
+  REJECT_VALUE = 10, REJECTED_ROW_LOCATION = 'rejections/calendar'
+);
+------ create vendor table
+USE nyc_taxi_ldw;
+-- check if table exist:
+IF OBJECT_ID('bronze.vendor') IS NOT NULL 
+DROP 
+  EXTERNAL TABLE bronze.vendor -- create external table: vendor
+  CREATE EXTERNAL TABLE bronze.vendor (
+    -- insert columns and data types:
+    vendor_id TINYINT, 
+    vendor_name VARCHAR(50)
+  ) -- execute with clause:
+  WITH (
+    LOCATION = 'raw/vendor.csv', DATA_SOURCE = nyc_taxi_src, 
+    FILE_FORMAT = csv_file_format_pv1, 
+    REJECT_VALUE = 10, REJECTED_ROW_LOCATION = 'rejections/vendor'
+  );
+SELECT 
+  * 
+FROM 
+  bronze.vendor;
+USE nyc_taxi_ldw;
+----- create trip type external table:
+IF OBJECT_ID ('bronze.trip_type') IS NOT NULL 
+DROP 
+  EXTERNAL TABLE bronze.trip_type;
+CREATE EXTERNAL TABLE bronze.trip_type (
+  trip_type TINYINT, 
+  trip_type_desc VARCHAR(50)
+) WITH (
+  LOCATION = 'raw/trip_type.tsv', DATA_SOURCE = nyc_taxi_src, 
+  FILE_FORMAT = tsv_file_format_pv1, 
+  REJECT_VALUE = 10, REJECTED_ROW_LOCATION = 'rejections/trip_type'
+);
+SELECT 
+  * 
+FROM 
+  bronze.trip_type;
+-- drop external table if exist:
+IF OBJECT_ID('bronze.trip_data_green_csv') IS NOT NULL 
+DROP 
+  EXTERNAL TABLE bronze.trip_data_green_csv;
+--- create external table trip_data_green_csv:
+CREATE EXTERNAL TABLE bronze.trip_data_green_csv (
+  VendorID INT, 
+  lpep_pickup_datetime datetime2(7), 
+  lpep_dropoff_datetime datetime2(7), 
+  store_and_fwd_flag CHAR(1), 
+  RatecodeID INT, 
+  PULocationID INT, 
+  DOLocationID INT, 
+  passenger_count INT, 
+  trip_distance FLOAT, 
+  extra FLOAT, 
+  mta_tax FLOAT, 
+  tolls_amount FLOAT, 
+  ehail_fee INT, 
+  improvement_surcharge FLOAT, 
+  total_amount FLOAT, 
+  payment_type INT, 
+  trip_type INT, 
+  congestion_surcharge FLOAT
+) WITH (
+  LOCATION = 'raw/trip_data_green_csv/**', 
+  DATA_SOURCE = nyc_taxi_src, FILE_FORMAT = csv_file_format
+);
+----- create external table for parquet: -------
+-- drop external table if exist:
+IF OBJECT_ID(
+  'bronze.trip_data_green_parquet'
+) IS NOT NULL 
+DROP 
+  EXTERNAL TABLE bronze.trip_data_green_parquet;
+--- create external table trip_data_green_parquet:
+CREATE EXTERNAL TABLE bronze.trip_data_green_parquet (
+  VendorID INT, 
+  lpep_pickup_datetime datetime2(7), 
+  lpep_dropoff_datetime datetime2(7), 
+  store_and_fwd_flag CHAR(1), 
+  RatecodeID INT, 
+  PULocationID INT, 
+  DOLocationID INT, 
+  passenger_count INT, 
+  trip_distance FLOAT, 
+  extra FLOAT, 
+  mta_tax FLOAT, 
+  tolls_amount FLOAT, 
+  ehail_fee INT, 
+  improvement_surcharge FLOAT, 
+  total_amount FLOAT, 
+  payment_type INT, 
+  trip_type INT, 
+  congestion_surcharge FLOAT
+) WITH (
+  LOCATION = 'raw/trip_data_green_parquet/**', 
+  DATA_SOURCE = nyc_taxi_src, FILE_FORMAT = parquet_file_format
+);
+
 ```
 
 
