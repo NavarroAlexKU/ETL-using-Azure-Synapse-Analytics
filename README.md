@@ -599,6 +599,37 @@ GO
 
 -- select first 10 rows of data:
 SELECT TOP 10 * FROM bronze.vw_rate_code;
+
+
+---- create view for payment type data source:
+USE nyc_taxi_ldw GO
+
+-- drop view if exist:
+DROP VIEW IF EXISTS bronze.vw_payment_type
+GO
+
+-- create view:
+CREATE VIEW bronze.vw_payment_type AS
+-- select clause:
+  SELECT
+    payment_type,
+    description
+  -- from clause:  
+  FROM 
+    OPENROWSET (
+      BULK 'raw/payment_type.json', DATA_SOURCE = 'nyc_taxi_src', 
+      FORMAT = 'CSV', FIELDTERMINATOR = '0x0b', FIELDQUOTE = '0x0b', 
+      ROWTERMINATOR = '0x0b'
+    ) WITH (
+      jsonDoc NVARCHAR(MAX)
+    ) AS payment_type CROSS APPLY OPENJSON(jsonDoc) WITH (
+      payment_type SMALLINT, 
+      description VARCHAR(20) '$.payment_type_desc'
+    )
+GO
+
+-- select first 10 rows of data:
+SELECT TOP 10 * FROM bronze.vw_payment_type;
 ```
 
 
