@@ -340,6 +340,18 @@ IF NOT EXISTS (
 ) CREATE EXTERNAL FILE FORMAT parquet_file_format WITH (
   FORMAT_TYPE = PARQUET, DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'
 );
+
+----- create external file format for delta_file_format:
+IF NOT EXISTS (
+  SELECT *
+  FROM sys.external_file_formats
+  WHERE name = 'delta_file_format'
+)
+  CREATE EXTERNAL FILE FORMAT delta_file_format
+  WITH (
+    FORMAT_TYPE = DELTA,
+    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'
+  )
 ```
 
 ### Create External Table:
@@ -347,6 +359,7 @@ IF NOT EXISTS (
 When you need to perform a lot of analysis or reporting from files in the data lake, using the OPENROWSET function can result in complex code that includes data sources and file paths. To simplify access to the data, you can encapsulate the files in an external table; which users and reporting applications can query using a standard SQL SELECT statement just like any other database table. To create an external table, use the CREATE EXTERNAL TABLE statement, specifying the column schema as for a standard table, and including a WITH clause specifying the external data source, relative path, and external file format for your data.
 
 ```
+---- create external table: CSV File Type
 USE nyc_taxi_ldw;
 -- check if table exist:
 IF NOT EXISTS (
@@ -365,6 +378,8 @@ CREATE EXTERNAL FILE FORMAT csv_file_format WITH (
     ENCODING = 'UTF8', PARSER_VERSION = '2.0'
   )
 );
+
+
 -- check if table exist:
 IF NOT EXISTS (
   SELECT 
@@ -382,6 +397,8 @@ CREATE EXTERNAL FILE FORMAT csv_file_format_pv1 WITH (
     ENCODING = 'UTF8', PARSER_VERSION = '1.0'
   )
 );
+
+
 USE nyc_taxi_ldw;
 -- check if table exist:
 IF OBJECT_ID('bronze.taxi_zone') IS NOT NULL 
@@ -399,11 +416,8 @@ DROP
     FILE_FORMAT = csv_file_format_pv1, 
     REJECT_VALUE = 10, REJECTED_ROW_LOCATION = 'rejections/taxi_zone'
   );
-SELECT 
-  * 
-FROM 
-  bronze.taxi_zone;
---- create calendar table:
+
+---- create Calendar external table: CSV File Type
 IF OBJECT_ID('bronze.calendar') IS NOT NULL 
 DROP 
   EXTERNAL TABLE bronze.calendar;
@@ -426,6 +440,8 @@ CREATE EXTERNAL TABLE bronze.calendar (
   FILE_FORMAT = csv_file_format_pv1, 
   REJECT_VALUE = 10, REJECTED_ROW_LOCATION = 'rejections/calendar'
 );
+
+---- create Vendor external table: CSV File Type
 ------ create vendor table
 USE nyc_taxi_ldw;
 -- check if table exist:
@@ -442,10 +458,7 @@ DROP
     FILE_FORMAT = csv_file_format_pv1, 
     REJECT_VALUE = 10, REJECTED_ROW_LOCATION = 'rejections/vendor'
   );
-SELECT 
-  * 
-FROM 
-  bronze.vendor;
+  
 USE nyc_taxi_ldw;
 ----- create trip type external table:
 IF OBJECT_ID ('bronze.trip_type') IS NOT NULL 
@@ -463,6 +476,8 @@ SELECT
   * 
 FROM 
   bronze.trip_type;
+
+
 -- drop external table if exist:
 IF OBJECT_ID('bronze.trip_data_green_csv') IS NOT NULL 
 DROP 
@@ -491,6 +506,7 @@ CREATE EXTERNAL TABLE bronze.trip_data_green_csv (
   LOCATION = 'raw/trip_data_green_csv/**', 
   DATA_SOURCE = nyc_taxi_src, FILE_FORMAT = csv_file_format
 );
+
 ----- create external table for parquet: -------
 -- drop external table if exist:
 IF OBJECT_ID(
@@ -521,6 +537,36 @@ CREATE EXTERNAL TABLE bronze.trip_data_green_parquet (
 ) WITH (
   LOCATION = 'raw/trip_data_green_parquet/**', 
   DATA_SOURCE = nyc_taxi_src, FILE_FORMAT = parquet_file_format
+);
+
+----- create external table for delta: -------
+-- drop external table if exist:
+IF OBJECT_ID('bronze.trip_data_green_delta') IS NOT NULL 
+DROP 
+  EXTERNAL TABLE bronze.trip_data_green_delta;
+--- create external table trip_data_green_delta:
+CREATE EXTERNAL TABLE bronze.trip_data_green_delta (
+  VendorID INT, 
+  lpep_pickup_datetime datetime2(7), 
+  lpep_dropoff_datetime datetime2(7), 
+  store_and_fwd_flag CHAR(1), 
+  RatecodeID INT, 
+  PULocationID INT, 
+  DOLocationID INT, 
+  passenger_count INT, 
+  trip_distance FLOAT, 
+  extra FLOAT, 
+  mta_tax FLOAT, 
+  tolls_amount FLOAT, 
+  ehail_fee INT, 
+  improvement_surcharge FLOAT, 
+  total_amount FLOAT, 
+  payment_type INT, 
+  trip_type INT, 
+  congestion_surcharge FLOAT
+) WITH (
+  LOCATION = 'raw/trip_data_green_delta/**', 
+  DATA_SOURCE = nyc_taxi_src, FILE_FORMAT = delta_file_format
 );
 
 ```
