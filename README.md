@@ -632,6 +632,8 @@ GO
 SELECT TOP 10 * FROM bronze.vw_payment_type;
 ```
 
+## Data Ingestion:
+
 
 
 ## Data Transformation:
