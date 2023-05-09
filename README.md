@@ -571,6 +571,36 @@ CREATE EXTERNAL TABLE bronze.trip_data_green_delta (
 
 ```
 
+### Create Bronze Views:
+```
+USE nyc_taxi_ldw GO
+
+-- drop view if exist:
+DROP VIEW bronze.vw_rate_code
+GO
+
+-- create view:
+CREATE VIEW bronze.vw_rate_code AS
+  SELECT 
+    rate_code_id, 
+    rate_code -- from clause:
+  FROM 
+    OPENROWSET (
+      BULK 'raw/rate_code.json', DATA_SOURCE = 'nyc_taxi_src', 
+      FORMAT = 'CSV', FIELDTERMINATOR = '0x0b', FIELDQUOTE = '0x0b', 
+      ROWTERMINATOR = '0x0b'
+    ) WITH (
+      jsonDoc NVARCHAR(MAX)
+    ) AS rate_code CROSS APPLY OPENJSON(jsonDoc) WITH (
+      rate_code_id TINYINT, 
+      rate_code VARCHAR(20)
+    )
+GO
+
+-- select first 10 rows of data:
+SELECT TOP 10 * FROM bronze.vw_rate_code;
+```
+
 
 
 ## Data Transformation:
