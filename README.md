@@ -354,7 +354,7 @@ IF NOT EXISTS (
   )
 ```
 
-### Create External Table:
+### Create External Table Bronze Display Layer:
 
 When you need to perform a lot of analysis or reporting from files in the data lake, using the OPENROWSET function can result in complex code that includes data sources and file paths. To simplify access to the data, you can encapsulate the files in an external table; which users and reporting applications can query using a standard SQL SELECT statement just like any other database table. To create an external table, use the CREATE EXTERNAL TABLE statement, specifying the column schema as for a standard table, and including a WITH clause specifying the external data source, relative path, and external file format for your data.
 
@@ -571,7 +571,7 @@ CREATE EXTERNAL TABLE bronze.trip_data_green_delta (
 
 ```
 
-### Create Bronze Views:
+## Create Bronze Views:
 ```
 USE nyc_taxi_ldw GO
 
@@ -632,7 +632,126 @@ GO
 SELECT TOP 10 * FROM bronze.vw_payment_type;
 ```
 
-## Data Ingestion:
+## Create External Tables for Silver Display Layer:
+```
+-- switch to correct database:
+USE nyc_taxi_ldw
+GO
+
+--- drop if exist:
+IF OBJECT_ID('silver.taxi_zone') IS NOT NULL
+DROP EXTERNAL TABLE silver.taxi_zone
+GO
+
+-- create external table:
+CREATE EXTERNAL TABLE silver.taxi_zone WITH (
+  DATA_SOURCE = nyc_taxi_src,
+  LOCATION = 'silver/taxi_zone', 
+  FILE_FORMAT = parquet_file_format
+) AS 
+SELECT 
+  * 
+FROM 
+  bronze.taxi_zone;
+
+
+SELECT TOP 10 *
+FROM silver.taxi_zone;
+```
+
+```
+-- switch to correct database:
+USE nyc_taxi_ldw
+GO
+
+--- drop if exist:
+IF OBJECT_ID('silver.calendar') IS NOT NULL
+DROP EXTERNAL TABLE silver.calendar
+GO
+
+-- create external table:
+CREATE EXTERNAL TABLE silver.calendar WITH (
+  DATA_SOURCE = nyc_taxi_src,
+  LOCATION = 'silver/calendar', 
+  FILE_FORMAT = parquet_file_format
+) AS 
+SELECT 
+  * 
+FROM 
+  bronze.calendar;
+```
+
+```
+-- switch to correct database:
+USE nyc_taxi_ldw
+GO
+
+--- drop if exist:
+IF OBJECT_ID('silver.trip_type') IS NOT NULL
+DROP EXTERNAL TABLE silver.trip_type
+GO
+
+-- create external table:
+CREATE EXTERNAL TABLE silver.trip_type WITH (
+  DATA_SOURCE = nyc_taxi_src,
+  LOCATION = 'silver/trip_type', 
+  FILE_FORMAT = parquet_file_format
+) AS 
+SELECT 
+  * 
+FROM 
+  bronze.trip_type;
+```
+
+```
+-- switch to correct database:
+USE nyc_taxi_ldw
+GO
+
+--- drop if exist:
+IF OBJECT_ID('silver.vendor') IS NOT NULL
+DROP EXTERNAL TABLE silver.vendor
+GO
+
+-- create external table:
+CREATE EXTERNAL TABLE silver.vendor WITH (
+  DATA_SOURCE = nyc_taxi_src,
+  LOCATION = 'silver/vendor', 
+  FILE_FORMAT = parquet_file_format
+) AS 
+SELECT 
+  * 
+FROM 
+  bronze.vendor;
+```
+
+```
+-- switch to correct database:
+USE nyc_taxi_ldw GO --- drop if exist:
+IF OBJECT_ID('silver.rate_code') IS NOT NULL 
+DROP 
+  EXTERNAL TABLE silver.rate_code GO -- create external table:
+  CREATE EXTERNAL TABLE silver.rate_code WITH (
+    DATA_SOURCE = nyc_taxi_src, LOCATION = 'silver/rate_code', 
+    FILE_FORMAT = parquet_file_format
+  ) AS 
+SELECT 
+  rate_code_id, 
+  rate_code 
+FROM 
+  OPENROWSET (
+    BULK 'raw/rate_code.json', DATA_SOURCE = 'nyc_taxi_src', 
+    FORMAT = 'CSV', FIELDTERMINATOR = '0x0b', 
+    FIELDQUOTE = '0x0b', ROWTERMINATOR = '0x0b'
+  ) WITH (
+    jsonDoc NVARCHAR(MAX)
+  ) AS rate_code CROSS APPLY OPENJSON(jsonDoc) WITH (
+    rate_code_id TINYINT, 
+    rate_code VARCHAR(20)
+  );
+```
+
+
 
 
 
