@@ -818,3 +818,9 @@ GO
 ## Data Transformation:
 ![ScreenShot](https://global-uploads.webflow.com/634fa785d369cb60d80b6dd1/637f242f02ba099898c68400_Data-Transform.jpg)
 
+### Dataset Requirements:
+* Number of trips made using a credit card and cash payments
+* Payment behaviour during days of the week and weekend
+* Payment behaviour between boroughs
+* Reporting data to be pre-aggregated for better performance
+* Pre-aggregated data for each year/month partition in isolation
