@@ -824,3 +824,61 @@ GO
 * Payment behaviour between boroughs
 * Reporting data to be pre-aggregated for better performance
 * Pre-aggregated data for each year/month partition in isolation
+
+### Create Stored Procedure referencing above dataset requirements:
+```
+--- switch to database:
+USE nyc_taxi_ldw -- execute go:
+GO -- create stored procedure:
+CREATE 
+OR ALTER PROCEDURE gold.usp_gold_trip_data_green -- declare parameters:
+@year VARCHAR(4), 
+@month VARCHAR(2) AS BEGIN -- declare variable:
+DECLARE @create_sql_stmt NVARCHAR(MAX), 
+@drop_sql_stmt NVARCHAR(MAX);
+SET 
+  @create_sql_stmt = 'CREATE EXTERNAL TABLE gold.trip_data_green_' + @year + '_' + @month + ' WITH (
+        DATA_SOURCE = nyc_taxi_src,
+        LOCATION = ''gold/trip_data_green/year=' + @year + '/month=' + @month + ''',
+        FILE_FORMAT = parquet_file_format
+    )
+    AS
+-- create query:
+SELECT
+    TOP(100)
+    td.year,
+    td.month,
+    CONVERT(DATE, td.lpep_pickup_datetime) AS trip_date,
+    tz.borough,
+    cal.day_name AS trip_day,
+    CASE WHEN cal.day_name IN (''Saturday'',''Sunday'') THEN ''Y'' ELSE ''N'' END AS trip_day_weekend_ind,
+    SUM(CASE WHEN pt.description = ''Credit card'' THEN 1 ELSE 0 END) AS card_trip_count,
+    SUM(CASE WHEN pt.description = ''Cash'' THEN 1 ELSE 0 END) AS cash_trip_count
+-- from clause:
+FROM silver.vw_trip_data_green td
+-- join taxi_zone table:
+INNER JOIN silver.taxi_zone tz
+ON (td.pu_location_id = tz.location_id)
+-- join calendar table:
+INNER JOIN silver.calendar cal
+ON (cal.date = CONVERT(DATE, td.lpep_pickup_datetime))
+-- join payment type table:
+INNER JOIN silver.payment_type pt
+ON (td.payment_type = pt.payment_type)
+-- where clause: 2020 and month = 01:
+WHERE td.year = ''' + @year + '''
+AND td.month = ''' + @month + '''
+-- group by columns:
+GROUP BY td.year, td.month, tz.borough, CONVERT(DATE, td.lpep_pickup_datetime), cal.day_name';
+-- print sql statement:
+print(@create_sql_stmt) --- execute store procedure:
+EXEC sp_executesql @create_sql_stmt;
+
+SET @drop_sql_stmt = 'DROP EXTERNAL TABLE gold.trip_data_green_' + @year + '_' + @month;
+
+print(@drop_sql_stmt)
+
+EXEC sp_executesql @drop_sql_stmt;
+
+END;
+```
