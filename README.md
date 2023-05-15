@@ -816,7 +816,7 @@ FROM
 GO
 ```
 ## Data Transformation:
-![ScreenShot](https://global-uploads.webflow.com/634fa785d369cb60d80b6dd1/637f242f02ba099898c68400_Data-Transform.jpg)
+![ScreenShot](https://github.com/NavarroAlexKU/ETL-using-Azure-Synapse-Analytics/blob/main/Data%20Transformation%20Layer.png?raw=true)
 
 ### Dataset Requirements:
 * Number of trips made using a credit card and cash payments
